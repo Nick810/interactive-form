@@ -163,10 +163,24 @@ option {
   color: #A63232;
 }
 
+.verified {
+  border: 2px solid #6CC070;
+}
+
+.verified__text {
+  color: #6CC070;
+}
+
 .validation-message {
   color: #A63232;
   margin: 0;
   transform: translateY(-0.75em);
+}
+
+.validation-message__verified {
+  margin: 0;
+  transform: translateY(-0.75em);
+  color: #6CC070;
 }
 
 .tooltips {
@@ -184,7 +198,7 @@ option {
 }
 
 .tooltips.email {
-  top: 144px;
+  top: 132px;
 }
 
 .tooltips.credit-card {
@@ -197,6 +211,17 @@ option {
 
 .tooltips.cvv {
   bottom: 336px;
+}
+
+.name-context__arrow-down {
+  position: absolute;
+  top: 108px;
+  right: 48px;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #083f57;
 }
 
 .hidden {

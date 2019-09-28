@@ -63,6 +63,10 @@ $('#colors-js-puns').hide();
 // Filter T-shirt's color options by user's theme option input.
 $('select#design').on('change', () => {
   if ($('select#design option:selected').val() === 'js puns') {
+      if ($('fieldset.shirt p').text() === 'Please choose your design') {
+        $('fieldset.shirt p').remove();
+        $('fieldset.shirt legend').removeClass('error__text');
+      }
     $('select#color option:contains("JS Puns shirt only")').show();
     $('select#color option:contains("I ♥ JS shirt only")').hide();
     $('select#color').val('cornflowerblue');
@@ -76,6 +80,10 @@ $('select#design').on('change', () => {
 
 // Checkbox
 $('fieldset.activities').on('change', () => {
+  $('fieldset.activities p').remove();
+  $('fieldset.activities legend').removeClass('error__text');
+    // $('fieldset.activities p').remove();
+  // }
   if ($('fieldset.activities').children().length < 9) {
     $('fieldset.activities').append(`<p></p>`);
     $('fieldset.activities p').text(`Total: $${$totalCost}`);
@@ -261,25 +269,55 @@ function checkForms() {
   }
 }
 
+const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+const emailValidator = /^[^@]+@[^@.]+\.[a-z]+$/i;
 $('input#name').on('keyup', () => {
-  const nameInputValue = $('input#name').val();
-  const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
-  if (nameValidator.test(nameInputValue)) {
-    $('.tooltips.name').addClass('hidden')
+  validateInput('input#name', nameValidator, '.tooltips.name');
+});
+
+$('input#mail').on('keyup', () => {
+  validateInput('input#mail', emailValidator, '.tooltips.email')
+});
+
+$('input#cc-num').on('keyup', () => {
+  validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card')
+});
+
+$('input#zip').on('keyup', () => {
+  validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code')
+});
+
+$('input#cvv').on('keyup', () => {
+  validateInput('input#cvv', cvvValidator, '.tooltips.cvv')
+});
+
+function validateInput(inputType, regex, toolTipsName) {
+  const nameInputValue = $(inputType).val();
+  const validator = regex;
+  if (validator.test(nameInputValue)) {
+    $(toolTipsName).addClass('hidden')
+    inputVerified(inputType);
   } else {
-    showToolTips('.tooltips.name');
-    console.log('HOOOOO');
+    showToolTips(toolTipsName);
   }
-})
+}
 
 function showToolTips(className) {
   $(className).removeClass('hidden');
 }
 
+function inputVerified(inputType) {
+  $(inputType).addClass('verified');
+  $(inputType).prev().addClass('verified__text');
+  $(inputType).next().removeClass('validation-message');
+  $(inputType).next().addClass('validation-message__verified');
+  $(inputType).next().text('OK!');
+}
+
 function appendToolTips() {
-  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase</span>`).insertAfter($('input#name'))
-  $(`<span class="tooltips email hidden">Must be a valid email address</span>`).insertAfter($('input#mail'))
-  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card</span>`).insertAfter($('input#mail'))
-  $(`<span class="tooltips zip-code hidden">Must be a valid zip code</span>`).insertAfter($('input#mail'))
-  $(`<span class="tooltips cvv hidden">Must be a 3-digit</span>`).insertAfter($('input#mail'))
+  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase</span><span class="name-context__arrow-down"></span>`).appendTo($('form'))
+  $(`<span class="tooltips email hidden">Must be a valid email address</span>`).appendTo($('form'))
+  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card</span>`).appendTo($('form'))
+  $(`<span class="tooltips zip-code hidden">Must be a valid zip code</span>`).appendTo($('form'))
+  $(`<span class="tooltips cvv hidden">Must be a 3-digit</span>`).appendTo($('form'))
 }
