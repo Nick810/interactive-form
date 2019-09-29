@@ -198,7 +198,7 @@ option {
 }
 
 .tooltips.email {
-  top: 132px;
+  top: 162px;
 }
 
 .tooltips.credit-card {
@@ -213,15 +213,42 @@ option {
   bottom: 336px;
 }
 
-.name-context__arrow-down {
+.name-context__arrow-down,
+.email-context__arrow-down,
+.credit-card-context__arrow-down,
+.zip-code-context__arrow-down,
+.cvv-context__arrow-down {
   position: absolute;
-  top: 108px;
-  right: 48px;
   width: 0;
   height: 0;
   border-left: 20px solid transparent;
   border-right: 20px solid transparent;
   border-top: 20px solid #083f57;
+}
+
+.name-context__arrow-down {
+  top: 84px;
+  right: 16px;
+}
+
+.email-context__arrow-down {
+  top: 63px;
+  right: 16px;
+}
+
+.credit-card-context__arrow-down {
+  right: 16px;
+  bottom: -8px;
+}
+
+.zip-code-context__arrow-down {
+  right: 16px;
+  bottom: -8px;
+}
+
+.cvv-context__arrow-down {
+  right: 16px;
+  bottom: -8px;
 }
 
 .hidden {

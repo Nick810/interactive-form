@@ -38,6 +38,9 @@ const $validation = [
 // When the page loads, the first input field is focused.
 $( document ).ready(function() {
   $('input:visible:first').focus();
+  $('input#zip').attr('maxlength', "5")
+  $('input#cc-num').attr('maxlength', "16")
+  $('input#cvv').attr('maxlength', "3")
   appendToolTips();
 });
 
@@ -221,6 +224,8 @@ function inputCheck(inputType, index) {
     $(`<p class="validation-message">${$validation[index].message}</p>`).insertAfter($(inputType));
     $validation[index].display = true;
     return false;
+  } else if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === true) {
+    return false;
   } else {
     return true;
   }
@@ -262,7 +267,14 @@ function checkForms() {
     zipCodeInputValue = inputCheck('input#zip', 6);
     cvvInputValue = inputCheck('input#cvv', 7);
   }
-  if (nameInputValue === true) {
+  if (nameInputValue === true &&
+      emailInputValue === true &&
+      // jobRoleInputValue === true &&
+      // themeInputValue === true &&
+      // activitiesInputValue === true &&
+      creditCardInputValue === true &&
+      zipCodeInputValue === true &&
+      cvvInputValue === true) {
     return true;
   } else {
     return false;
@@ -271,6 +283,10 @@ function checkForms() {
 
 const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
 const emailValidator = /^[^@]+@[^@.]+\.[a-z]+$/i;
+const creditCardValidator = /^\d{16}/
+const zipCodeValidator = /^\d{5}/;
+const cvvValidator = /^\d{3}/;
+
 $('input#name').on('keyup', () => {
   validateInput('input#name', nameValidator, '.tooltips.name');
 });
@@ -297,27 +313,29 @@ function validateInput(inputType, regex, toolTipsName) {
   if (validator.test(nameInputValue)) {
     $(toolTipsName).addClass('hidden')
     inputVerified(inputType);
+    return true;
   } else {
     showToolTips(toolTipsName);
+    return false;
   }
 }
 
 function showToolTips(className) {
-  $(className).removeClass('hidden');
+  return $(className).removeClass('hidden');
 }
 
 function inputVerified(inputType) {
   $(inputType).addClass('verified');
   $(inputType).prev().addClass('verified__text');
-  $(inputType).next().removeClass('validation-message');
-  $(inputType).next().addClass('validation-message__verified');
-  $(inputType).next().text('OK!');
+  // $(inputType).next().removeClass('validation-message');
+  // $(inputType).next().addClass('validation-message__verified');
+  // $(inputType).next().text('OK!');
 }
 
 function appendToolTips() {
-  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase</span><span class="name-context__arrow-down"></span>`).appendTo($('form'))
-  $(`<span class="tooltips email hidden">Must be a valid email address</span>`).appendTo($('form'))
-  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card</span>`).appendTo($('form'))
-  $(`<span class="tooltips zip-code hidden">Must be a valid zip code</span>`).appendTo($('form'))
-  $(`<span class="tooltips cvv hidden">Must be a 3-digit</span>`).appendTo($('form'))
+  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase<span class="name-context__arrow-down"></span></span>`).appendTo($('form'))
+  $(`<span class="tooltips email hidden">Must be a valid email address<span class="email-context__arrow-down"></span></span>`).appendTo($('form'))
+  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card<span class="credit-card-context__arrow-down"></span></span>`).appendTo($('form'))
+  $(`<span class="tooltips zip-code hidden">Must be a valid zip code<span class="zip-code-context__arrow-down"></span></span>`).appendTo($('form'))
+  $(`<span class="tooltips cvv hidden">Must be a 3-digit<span class="cvv-context__arrow-down"></span></span>`).appendTo($('form'))
 }
