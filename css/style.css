@@ -201,6 +201,10 @@ option {
   top: 162px;
 }
 
+.tooltips.job-role {
+  top: 276px;
+}
+
 .tooltips.credit-card {
   bottom: 528px;
 }
@@ -215,6 +219,7 @@ option {
 
 .name-context__arrow-down,
 .email-context__arrow-down,
+.job-role-context__arrow-down,
 .credit-card-context__arrow-down,
 .zip-code-context__arrow-down,
 .cvv-context__arrow-down {
@@ -232,6 +237,11 @@ option {
 }
 
 .email-context__arrow-down {
+  top: 63px;
+  right: 16px;
+}
+
+.job-role-context__arrow-down {
   top: 63px;
   right: 16px;
 }

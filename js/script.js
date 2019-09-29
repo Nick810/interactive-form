@@ -1,5 +1,11 @@
 /* ----- Variable Declaration ----- */
 let $totalCost = 0;
+const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+const emailValidator = /^[^@]+@[^@.]+\.[a-z]+$/i;
+const jobRoleValidator = /^[a-zA-Z ]*$/;
+const creditCardValidator = /^\d{16}/;
+const zipCodeValidator = /^\d{5}/;
+const cvvValidator = /^\d{3}/;
 const $validation = [
   {
     message: 'Please enter your name',
@@ -147,75 +153,6 @@ $('select#payment').on('change', () => {
 });
 
 // Validation
-// $('button[type="submit"]').click(function(e) {
-//   $('input').each((i, element) => {
-//     if ($(element).attr('id') === 'name' && $validation[i].display === false) {
-//       return false;
-//       $(element).addClass('error');
-//       $(element).prev().addClass('error__text');
-      // $(`<p class="validation-message">${$validation[i].message}</p>`).insertAfter($(element));
-//       $validation[i].display = true;
-//     } else if ($(element).attr('id') === 'name' && $validation[i].display === true) {
-//       return false;
-//     }
-//
-//     if ($(element).attr('id') === 'mail' && $validation[i].display === false) {
-//       e.preventDefault();
-//       $(element).addClass('error');
-//       $(element).prev().addClass('error__text');
-//       $(`<p class="validation-message">${$validation[i].message}</p>`).insertAfter($(element));
-//       $validation[i].display = true;
-//     } else if ($(element).attr('id') === 'mail' && $validation[i].display === true) {
-//       e.preventDefault();
-//     }
-//
-//     if ($('select#title option:selected').val() === 'other') {
-//       if ($(element).attr('id') === 'other-title' && $validation[i].display === false) {
-//         e.preventDefault();
-//         $(element).addClass('error');
-//         $(`<p class="validation-message">${$validation[i].message}</p>`).insertAfter($(element));
-//         $validation[i].display = true;
-//       } else if ($(element).attr('id') === 'other-title' && $validation[i].display === true) {
-//         e.preventDefault();
-//       }
-//     } else {
-//       return true;
-//     }
-//
-//
-//     //   if ($(element).attr('id') === 'other-title') {
-//     //     if ($('select#title option:selected').val() === 'other') {
-//     //       $(element).addClass('error');
-//           // $(`<p class="validation-message">${$validation[i].message}</p>`).insertAfter($(element));
-//     //       $validation[i].display = true;
-//     //       return true;
-//     //     }
-//     //   } else {
-//     //     return true;
-//     //   }
-//     //   e.preventDefault();
-//     //   $(element).prev().addClass('error__text')
-//     //   $(element).addClass('error');
-//     //   $(`<p class="validation-message">${$validation[i].message}</p>`).insertAfter($(element));
-//     //   $validation[i].display = true;
-//     // } else {
-//     //   e.preventDefault();
-//   });
-  // if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === false) {
-//     $('fieldset.shirt legend').first().addClass('error__text');
-    // $(`<p class="validation-message">${$validation[3].message}</p>`).appendTo($('fieldset.shirt'))
-    // $validation[3].display = true;
-//   }
-//
-  // if ($('input[type="checkbox"]:checked').length === 0) {
-//     $('fieldset.activities legend').addClass('error__text')
-//   }
-//
-  // if ($('select#payment option:selected').val() === 'Credit Card') {
-//     $('#credit-card input').addClass('error');
-//     $('label[for="payment"]').prev().addClass('error__text');
-//   }
-// });
 function inputCheck(inputType, index) {
   const inputValue = $(inputType).val();
   if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === false) {
@@ -237,15 +174,20 @@ function themeInputCheck() {
     $(`<p class="validation-message">${$validation[3].message}</p>`).appendTo($('fieldset.shirt'))
     $validation[3].display = true;
     return false;
+  } else if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === true) {
+    return false;
   } else {
     return true;
   }
 }
 
 function activitiesInputCheck() {
-  if ($('input[type="checkbox"]:checked').length === 0) {
+  if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === false) {
     $('fieldset.activities legend').addClass('error__text');
     $(`<p class="validation-message">${$validation[4].message}</p>`).appendTo($('fieldset.activities'))
+    $validation[4].display = true;
+    return false;
+  } else if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === true) {
     return false;
   } else {
     return true;
@@ -253,58 +195,73 @@ function activitiesInputCheck() {
 }
 
 function checkForms() {
-  nameInputValue = inputCheck('input#name', 0);
-  emailInputValue = inputCheck('input#mail', 1);
+  let jobRoleInputValue = null;
+  const nameInputValue = inputCheck('input#name', 0);
+  const emailInputValue = inputCheck('input#mail', 1);
   if ($('select#title option:selected').val() === 'other') {
     jobRoleInputValue = inputCheck('input#other-title', 2);
     $('select#title').prev().addClass('error__text');
     $('select#title').removeClass('error__text');
   }
-  themeInputValue = themeInputCheck();
-  activitiesInputValue = activitiesInputCheck();
+  console.log(jobRoleInputValue);
+  const themeInputValue = themeInputCheck();
+  const activitiesInputValue = activitiesInputCheck();
   if ($('select#payment option:selected').val() === 'Credit Card') {
-    creditCardInputValue = inputCheck('input#cc-num', 5);
-    zipCodeInputValue = inputCheck('input#zip', 6);
-    cvvInputValue = inputCheck('input#cvv', 7);
+    const creditCardInputValue = inputCheck('input#cc-num', 5);
+    const zipCodeInputValue = inputCheck('input#zip', 6);
+    const cvvInputValue = inputCheck('input#cvv', 7);
   }
-  if (nameInputValue === true &&
-      emailInputValue === true &&
-      // jobRoleInputValue === true &&
-      // themeInputValue === true &&
-      // activitiesInputValue === true &&
-      creditCardInputValue === true &&
-      zipCodeInputValue === true &&
-      cvvInputValue === true) {
-    return true;
+
+  if ($('select#title option:selected').val() === 'other') {
+    if (nameInputValue === true &&
+        emailInputValue === true &&
+        jobRoleInputValue === true &&
+        themeInputValue === true &&
+        activitiesInputValue === true &&
+        creditCardInputValue === true &&
+        zipCodeInputValue === true &&
+        cvvInputValue === true) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
-    return false;
+    if (nameInputValue === true &&
+        emailInputValue === true &&
+        themeInputValue === true &&
+        activitiesInputValue === true &&
+        creditCardInputValue === true &&
+        zipCodeInputValue === true &&
+        cvvInputValue === true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
-
-const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
-const emailValidator = /^[^@]+@[^@.]+\.[a-z]+$/i;
-const creditCardValidator = /^\d{16}/
-const zipCodeValidator = /^\d{5}/;
-const cvvValidator = /^\d{3}/;
 
 $('input#name').on('keyup', () => {
   validateInput('input#name', nameValidator, '.tooltips.name');
 });
 
 $('input#mail').on('keyup', () => {
-  validateInput('input#mail', emailValidator, '.tooltips.email')
+  validateInput('input#mail', emailValidator, '.tooltips.email');
+});
+
+$('input#other-title').on('keyup', () => {
+  validateInput('input#other-title', jobRoleValidator, '.tooltips.job-role');
 });
 
 $('input#cc-num').on('keyup', () => {
-  validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card')
+  validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card');
 });
 
 $('input#zip').on('keyup', () => {
-  validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code')
+  validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code');
 });
 
 $('input#cvv').on('keyup', () => {
-  validateInput('input#cvv', cvvValidator, '.tooltips.cvv')
+  validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
 });
 
 function validateInput(inputType, regex, toolTipsName) {
@@ -316,6 +273,18 @@ function validateInput(inputType, regex, toolTipsName) {
     return true;
   } else {
     showToolTips(toolTipsName);
+    if ($(inputType).next().text() === 'OK!') {
+      $(inputType).removeClass('verified');
+      $(inputType).prev().removeClass('verified__text');
+      $(inputType).next().addClass('validation-message');
+      $(inputType).next().removeClass('validation-message__verified');
+      $(inputType).next().text('Opps! Please follow the tool tips recommendation')
+    } else if ($(inputType).hasClass('verified')) {
+      $(inputType).addClass('error');
+      $(inputType).removeClass('verified');
+      $(inputType).prev().addClass('error__text');
+      $(inputType).prev().removeClass('verified__text');
+    }
     return false;
   }
 }
@@ -325,17 +294,30 @@ function showToolTips(className) {
 }
 
 function inputVerified(inputType) {
-  $(inputType).addClass('verified');
-  $(inputType).prev().addClass('verified__text');
-  // $(inputType).next().removeClass('validation-message');
-  // $(inputType).next().addClass('validation-message__verified');
-  // $(inputType).next().text('OK!');
+  if ($(inputType).prev().prop('tagName') === 'SELECT') {
+    $(inputType).prev().removeClass('verified__text');
+    $(inputType).prev().prev().addClass('verified__text');
+  } else {
+    $(inputType).addClass('verified');
+    $(inputType).prev().addClass('verified__text');
+  }
+
+  if ($(inputType).next().hasClass('validation-message')) {
+    if ($(inputType).prev().prop('tagName') === 'SELECT') {
+      $(inputType).prev().removeClass('verified__text');
+      $(inputType).prev().prev().addClass('verified__text');
+    }
+    $(inputType).next().text('OK!');
+    $(inputType).next().removeClass('validation-message');
+    $(inputType).next().addClass('validation-message__verified');
+  }
 }
 
 function appendToolTips() {
-  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase<span class="name-context__arrow-down"></span></span>`).appendTo($('form'))
-  $(`<span class="tooltips email hidden">Must be a valid email address<span class="email-context__arrow-down"></span></span>`).appendTo($('form'))
-  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card<span class="credit-card-context__arrow-down"></span></span>`).appendTo($('form'))
-  $(`<span class="tooltips zip-code hidden">Must be a valid zip code<span class="zip-code-context__arrow-down"></span></span>`).appendTo($('form'))
-  $(`<span class="tooltips cvv hidden">Must be a 3-digit<span class="cvv-context__arrow-down"></span></span>`).appendTo($('form'))
+  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase<span class="name-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips email hidden">Must be a valid email address<span class="email-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips job-role hidden">Can only contain letters<span class="job-role-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card<span class="credit-card-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips zip-code hidden">Must be a valid zip code<span class="zip-code-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips cvv hidden">Must be a 3-digit<span class="cvv-context__arrow-down"></span></span>`).appendTo($('form'));
 }
