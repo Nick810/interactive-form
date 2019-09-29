@@ -317,4 +317,22 @@ option {
     bottom: 214px;
     right: 32px;
   }
+
+  .zip-code-context__arrow-down {
+    right: 16px;
+    bottom: 60px;
+  }
+
+  .cvv-context__arrow-down {
+    right: 16px;
+    bottom: 38px;
+  }
+
+  .zip-code-context__arrow-down,
+  .cvv-context__arrow-down {
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid #083f57;
+    border-top: none;
+  }
 }
