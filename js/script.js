@@ -9,14 +9,17 @@ const cvvValidator = /^\d{3}/;
 const $validation = [
   {
     message: 'Please enter your name',
+    conMessage: 'Please make sure you enter letters only',
     display: false
   },
   {
     message: 'Please enter your email address',
+    conMessage: 'Please enter a valid format of email address',
     display: false
   },
   {
     message: 'Please enter your job role',
+    conMessage: 'Please make sure you enter letters only',
     display: false
   },
   {
@@ -29,14 +32,17 @@ const $validation = [
   },
   {
     message: 'Please fill in your 16-digit number',
+    conMessage: 'Please make sure you enter 16 digits of numbers',
     display: false
   },
   {
     message: 'Please fill in your zip code',
+    conMessage: 'Please make sure you enter 5 digits of numbers',
     display: false
   },
   {
     message: 'Please fill in your 3-digit cvv',
+    conMessage: 'Please make sure you enter 3 digits of numbers',
     display: false
   }
 ];
@@ -90,18 +96,49 @@ function activitiesInputCheck() {
 function checkForms() {
   let jobRoleInputValue = null;
   const nameInputValue = inputCheck('input#name', 0);
+  if (/^\d+/.test($('input#name').val())) {
+    if ($('input#name').next().prop('tagName') === 'P') {
+      $('input#name').next().remove();
+    }
+    $('input#name').addClass('error');
+    $('input#name').prev().addClass('error__text');
+    $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#name'));
+  }
   const emailInputValue = inputCheck('input#mail', 1);
+  if (!emailValidator.test($('input#mail').val())) {
+    if ($('input#mail').next().prop('tagName') === 'P') {
+      $('input#mail').next().remove();
+    }
+    $('input#mail').addClass('error');
+    $('input#mail').prev().addClass('error__text');
+    $(`<p class="validation-message">${$validation[1].conMessage}</p>`).insertAfter($('input#mail'));
+  }
   if ($('select#title option:selected').val() === 'other') {
     jobRoleInputValue = inputCheck('input#other-title', 2);
     $('select#title').prev().addClass('error__text');
     $('select#title').removeClass('error__text');
+    if (/^\d+/.test($('input#other-title').val())) {
+      if ($('input#other-title').next().prop('tagName') === 'P') {
+        $('input#other-title').next().remove();
+      }
+      $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#other-title'));
+    }
   }
   const themeInputValue = themeInputCheck();
   const activitiesInputValue = activitiesInputCheck();
   if ($('select#payment option:selected').val() === 'Credit Card') {
     const creditCardInputValue = inputCheck('input#cc-num', 5);
+    if ($('input#cc-num').val().length > 1 && $('input#cc-num').val().length < 16) {
+      conditionalValidate('input#cc-num', 5);
+    }
     const zipCodeInputValue = inputCheck('input#zip', 6);
+    if ($('input#zip').val().length > 1 && $('input#zip').val().length < 5) {
+      conditionalValidate('input#zip', 6);
+    }
     const cvvInputValue = inputCheck('input#cvv', 7);
+    if ($('input#cvv').val().length > 1 && $('input#cvv').val().length < 3) {
+      conditionalValidate('input#cvv', 7);
+    }
   }
 
   if ($('select#title option:selected').val() === 'other') {
@@ -136,6 +173,7 @@ function validateInput(inputType, regex, toolTipsName) {
   const validator = regex;
   if (validator.test(nameInputValue)) {
     $(toolTipsName).addClass('hidden')
+    $(inputType).addClass('verified');
     inputVerified(inputType);
     return true;
   } else {
@@ -146,7 +184,17 @@ function validateInput(inputType, regex, toolTipsName) {
       $(inputType).next().addClass('validation-message');
       $(inputType).next().removeClass('validation-message__verified');
       $(inputType).next().text('Opps! Please follow the tool tips recommendation')
+      if ((inputType) === 'input#other-title') {
+        $(inputType).prev().prev().addClass('error__text');
+      }
     } else if ($(inputType).hasClass('verified')) {
+      if ((inputType) === 'input#other-title') {
+        $(inputType).addClass('error');
+        $(inputType).removeClass('verified');
+        $(inputType).prev().removeClass('error__text');
+        $(inputType).prev().prev().addClass('error__text');
+        $(inputType).prev().prev().removeClass('verified__text');
+      }
       $(inputType).addClass('error');
       $(inputType).removeClass('verified');
       $(inputType).prev().addClass('error__text');
@@ -182,6 +230,16 @@ function inputVerified(inputType) {
   }
 }
 
+
+function conditionalValidate(inputType, i) {
+  if ($(inputType).next().prop('tagName') === 'P') {
+    $(inputType).next().remove();
+  }
+  $(inputType).addClass('error');
+  $(inputType).prev().addClass('error__text');
+  $(`<p class="validation-message">${$validation[i].conMessage}</p>`).insertAfter($(inputType));
+}
+
 // Format credit card input
 function formatCreditCard(input) {
   const regex = /^(\d{4})(\d{4})(\d{4})(\d{4})$/;
@@ -190,7 +248,7 @@ function formatCreditCard(input) {
 
 // Append tooltips.
 function appendToolTips() {
-  $(`<span class="tooltips name hidden">Can only contain letters a-z in lowercase<span class="name-context__arrow-down"></span></span>`).appendTo($('form'));
+  $(`<span class="tooltips name hidden">Can only contain letters in lower or uppercase<span class="name-context__arrow-down"></span></span>`).appendTo($('form'));
   $(`<span class="tooltips email hidden">Must be a valid email address<span class="email-context__arrow-down"></span></span>`).appendTo($('form'));
   $(`<span class="tooltips job-role hidden">Can only contain letters<span class="job-role-context__arrow-down"></span></span>`).appendTo($('form'));
   $(`<span class="tooltips credit-card hidden">Must be a valid 16-digit card<span class="credit-card-context__arrow-down"></span></span>`).appendTo($('form'));
