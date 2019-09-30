@@ -172,6 +172,9 @@ function validateInput(inputType, regex, toolTipsName) {
   const nameInputValue = $(inputType).val();
   const validator = regex;
   if (validator.test(nameInputValue)) {
+    if ((inputType) === 'input#other-title') {
+      $('#title').removeAttr('class');
+    }
     $(toolTipsName).addClass('hidden')
     $(inputType).addClass('verified');
     inputVerified(inputType);
@@ -186,12 +189,10 @@ function validateInput(inputType, regex, toolTipsName) {
       $(inputType).next().text('Opps! Please follow the tool tips recommendation')
       if ((inputType) === 'input#other-title') {
         $(inputType).prev().prev().addClass('error__text');
+        $(inputType).prev().prev().removeClass('verified__text');
       }
     } else if ($(inputType).hasClass('verified')) {
       if ((inputType) === 'input#other-title') {
-        $(inputType).addClass('error');
-        $(inputType).removeClass('verified');
-        $(inputType).prev().removeClass('error__text');
         $(inputType).prev().prev().addClass('error__text');
         $(inputType).prev().prev().removeClass('verified__text');
       }
@@ -273,6 +274,8 @@ $('input#other-title').hide();
 $('select#title').on('change', () => {
   if ($('select#title option:selected').val() === 'other') {
     $('input#other-title').show();
+  } else {
+    $('input#other-title').hide();
   }
 });
 
