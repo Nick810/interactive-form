@@ -59,6 +59,8 @@ function inputCheck(inputType, index) {
     return false;
   } else if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === true) {
     return false;
+  } else if (/\s/.test(inputValue) || /^$/.test(inputValue)) {
+    return false;
   } else {
     return true;
   }
@@ -408,3 +410,5 @@ $('input#zip').on('keyup', () => {
 $('input#cvv').on('keyup', () => {
   validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
 });
+
+$('button[type="submit"]').on('click', checkForms);
