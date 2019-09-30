@@ -225,15 +225,14 @@ function checkForms() {
     } else {
       return false;
     }
-  } else {
-    if (nameInputValue === true &&
-        emailInputValue === true &&
-        themeInputValue === true &&
-        activitiesInputValue === true &&
-        creditCardInputValue === true &&
-        zipCodeInputValue === true &&
-        cvvInputValue === true) {
-      return true;
+  } else if (nameInputValue === true &&
+      emailInputValue === true &&
+      themeInputValue === true &&
+      activitiesInputValue === true &&
+      creditCardInputValue === true &&
+      zipCodeInputValue === true &&
+      cvvInputValue === true) {
+    return true;
     } else {
       return false;
     }
