@@ -49,199 +49,222 @@ const $validation = [
 
 /* ----- Functions ----- */
 // Validate text type inputs
-function inputCheck(inputType, index) {
-  const inputValue = $(inputType).val();
-  if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === false) {
-    $(inputType).addClass('error');
-    $(inputType).prev().addClass('error__text');
-    $(`<p class="validation-message">${$validation[index].message}</p>`).insertAfter($(inputType));
-    $validation[index].display = true;
-    return false;
-  } else if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === true) {
-    return false;
-  } else if (/\s/.test(inputValue) || /^$/.test(inputValue)) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// Validate theme input.
-function themeInputCheck() {
-  if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === false) {
-    $('fieldset.shirt legend').first().addClass('error__text');
-    $(`<p class="validation-message">${$validation[3].message}</p>`).appendTo($('fieldset.shirt'))
-    $validation[3].display = true;
-    return false;
-  } else if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === true) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// Validate activities input.
-function activitiesInputCheck() {
-  if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === false) {
-    $('fieldset.activities legend').addClass('error__text');
-    $(`<p class="validation-message">${$validation[4].message}</p>`).appendTo($('fieldset.activities'))
-    $validation[4].display = true;
-    return false;
-  } else if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === true) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// Master validation of all inputs prior to user's submission.
-function checkForms() {
-  let jobRoleInputValue = null;
-  const nameInputValue = inputCheck('input#name', 0);
-  if (/^\d+/.test($('input#name').val())) {
-    if ($('input#name').next().prop('tagName') === 'P') {
-      $('input#name').next().remove();
-    }
-    $('input#name').addClass('error');
-    $('input#name').prev().addClass('error__text');
-    $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#name'));
-  }
-  const emailInputValue = inputCheck('input#mail', 1);
-  if (!emailValidator.test($('input#mail').val())) {
-    if ($('input#mail').next().prop('tagName') === 'P') {
-      $('input#mail').next().remove();
-    }
-    $('input#mail').addClass('error');
-    $('input#mail').prev().addClass('error__text');
-    $(`<p class="validation-message">${$validation[1].conMessage}</p>`).insertAfter($('input#mail'));
-  }
-  if ($('select#title option:selected').val() === 'other') {
-    jobRoleInputValue = inputCheck('input#other-title', 2);
-    $('select#title').prev().addClass('error__text');
-    $('select#title').removeClass('error__text');
-    if (/^\d+/.test($('input#other-title').val())) {
-      if ($('input#other-title').next().prop('tagName') === 'P') {
-        $('input#other-title').next().remove();
-      }
-      $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#other-title'));
-    }
-  }
-  const themeInputValue = themeInputCheck();
-  const activitiesInputValue = activitiesInputCheck();
-  if ($('select#payment option:selected').val() === 'Credit Card') {
-    const creditCardInputValue = inputCheck('input#cc-num', 5);
-    if ($('input#cc-num').val().length > 1 && $('input#cc-num').val().length < 16) {
-      conditionalValidate('input#cc-num', 5);
-    }
-    const zipCodeInputValue = inputCheck('input#zip', 6);
-    if ($('input#zip').val().length > 1 && $('input#zip').val().length < 5) {
-      conditionalValidate('input#zip', 6);
-    }
-    const cvvInputValue = inputCheck('input#cvv', 7);
-    if ($('input#cvv').val().length > 1 && $('input#cvv').val().length < 3) {
-      conditionalValidate('input#cvv', 7);
-    }
-  }
-
-  if ($('select#title option:selected').val() === 'other') {
-    if (nameInputValue === true &&
-        emailInputValue === true &&
-        jobRoleInputValue === true &&
-        themeInputValue === true &&
-        activitiesInputValue === true &&
-        creditCardInputValue === true &&
-        zipCodeInputValue === true &&
-        cvvInputValue === true) {
-      return true;
-    } else {
-      return false;
-    }
-  } else if (nameInputValue === true &&
-    emailInputValue === true &&
-    themeInputValue === true &&
-    activitiesInputValue === true &&
-    creditCardInputValue === true &&
-    zipCodeInputValue === true &&
-    cvvInputValue === true) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-// Validate input using regex and reinform the user if the input is incorrectly formatted.
-function validateInput(inputType, regex, toolTipsName) {
-  const nameInputValue = $(inputType).val();
-  const validator = regex;
-  if (validator.test(nameInputValue)) {
-    if ((inputType) === 'input#other-title') {
-      $('#title').removeAttr('class');
-    }
-    $(toolTipsName).addClass('hidden')
-    $(inputType).addClass('verified');
-    inputVerified(inputType);
-    return true;
-  } else {
-    showToolTips(toolTipsName);
-    if ($(inputType).next().text() === 'OK!') {
-      $(inputType).removeClass('verified');
-      $(inputType).prev().removeClass('verified__text');
-      $(inputType).next().addClass('validation-message');
-      $(inputType).next().removeClass('validation-message__verified');
-      $(inputType).next().text('Opps! Please follow the tool tips recommendation')
-      if ((inputType) === 'input#other-title') {
-        $(inputType).prev().prev().addClass('error__text');
-        $(inputType).prev().prev().removeClass('verified__text');
-      }
-    } else if ($(inputType).hasClass('verified')) {
-      if ((inputType) === 'input#other-title') {
-        $(inputType).prev().prev().addClass('error__text');
-        $(inputType).prev().prev().removeClass('verified__text');
-      }
-      $(inputType).addClass('error');
-      $(inputType).removeClass('verified');
-      $(inputType).prev().addClass('error__text');
-      $(inputType).prev().removeClass('verified__text');
-    }
-    return false;
-  }
-}
-
-// Tooltips remover
-function showToolTips(className) {
-  return $(className).removeClass('hidden');
-}
-
-// Verify all inputs by changing validation message texts and colors.
-function inputVerified(inputType) {
-  if ($(inputType).prev().prop('tagName') === 'SELECT') {
-    $(inputType).prev().removeClass('verified__text');
-    $(inputType).prev().prev().addClass('verified__text');
-  } else {
-    $(inputType).addClass('verified');
-    $(inputType).prev().addClass('verified__text');
-  }
-
-  if ($(inputType).next().hasClass('validation-message')) {
-    if ($(inputType).prev().prop('tagName') === 'SELECT') {
-      $(inputType).prev().removeClass('verified__text');
-      $(inputType).prev().prev().addClass('verified__text');
-    }
-    $(inputType).next().text('OK!');
-    $(inputType).next().removeClass('validation-message');
-    $(inputType).next().addClass('validation-message__verified');
-  }
-}
-
-
-function conditionalValidate(inputType, i) {
-  if ($(inputType).next().prop('tagName') === 'P') {
-    $(inputType).next().remove();
-  }
-  $(inputType).addClass('error');
-  $(inputType).prev().addClass('error__text');
-  $(`<p class="validation-message">${$validation[i].conMessage}</p>`).insertAfter($(inputType));
-}
+// function inputCheck(inputType, index) {
+//   const inputValue = $(inputType).val();
+//   if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === false) {
+//     $(inputType).addClass('error');
+//     $(inputType).prev().addClass('error__text');
+//     $(`<p class="validation-message">${$validation[index].message}</p>`).insertAfter($(inputType));
+//     $validation[index].display = true;
+//     return false;
+//   } else if (/\s/.test(inputValue) || /^$/.test(inputValue) && $validation[index].display === true) {
+//     return false;
+//   } else if (/\s/.test(inputValue) || /^$/.test(inputValue)) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
+//
+// // Validate theme input.
+// function themeInputCheck() {
+//   if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === false) {
+//     $('fieldset.shirt legend').first().addClass('error__text');
+//     $(`<p class="validation-message">${$validation[3].message}</p>`).appendTo($('fieldset.shirt'))
+//     $validation[3].display = true;
+//     return false;
+//   } else if ($('select#design option:selected').val() === 'Select Theme' && $validation[3].display === true) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
+//
+// // Validate activities input.
+// function activitiesInputCheck() {
+//   if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === false) {
+//     $('fieldset.activities legend').addClass('error__text');
+//     $(`<p class="validation-message">${$validation[4].message}</p>`).appendTo($('fieldset.activities'))
+//     $validation[4].display = true;
+//     return false;
+//   } else if ($('input[type="checkbox"]:checked').length === 0 && $validation[4].display === true) {
+//     return false;
+//   } else {
+//     return true;
+//   }
+// }
+//
+// // Master validation of all inputs prior to user's submission.
+// function checkForms() {
+//   let jobRoleInputValue = null;
+//   const nameInputValue = inputCheck('input#name', 0);
+//   if (/^\d+/.test($('input#name').val())) {
+//     if ($('input#name').next().prop('tagName') === 'P') {
+//       $('input#name').next().remove();
+//     }
+//     $('input#name').addClass('error');
+//     $('input#name').prev().addClass('error__text');
+//     $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#name'));
+//   }
+//   const emailInputValue = inputCheck('input#mail', 1);
+//   if (!emailValidator.test($('input#mail').val())) {
+//     if ($('input#mail').next().prop('tagName') === 'P') {
+//       $('input#mail').next().remove();
+//     }
+//     $('input#mail').addClass('error');
+//     $('input#mail').prev().addClass('error__text');
+//     $(`<p class="validation-message">${$validation[1].conMessage}</p>`).insertAfter($('input#mail'));
+//   }
+//   if ($('select#title option:selected').val() === 'other') {
+//     jobRoleInputValue = inputCheck('input#other-title', 2);
+//     $('select#title').prev().addClass('error__text');
+//     $('select#title').removeClass('error__text');
+//     if (/^\d+/.test($('input#other-title').val())) {
+//       if ($('input#other-title').next().prop('tagName') === 'P') {
+//         $('input#other-title').next().remove();
+//       }
+//       $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#other-title'));
+//     }
+//   }
+//   const themeInputValue = themeInputCheck();
+//   const activitiesInputValue = activitiesInputCheck();
+//   if ($('select#payment option:selected').val() === 'Credit Card') {
+//     const creditCardInputValue = inputCheck('input#cc-num', 5);
+//     if ($('input#cc-num').val().length > 1 && $('input#cc-num').val().length < 16) {
+//       conditionalValidate('input#cc-num', 5);
+//     }
+//     const zipCodeInputValue = inputCheck('input#zip', 6);
+//     if ($('input#zip').val().length > 1 && $('input#zip').val().length < 5) {
+//       conditionalValidate('input#zip', 6);
+//     }
+//     const cvvInputValue = inputCheck('input#cvv', 7);
+//     if ($('input#cvv').val().length > 1 && $('input#cvv').val().length < 3) {
+//       conditionalValidate('input#cvv', 7);
+//     }
+//   }
+//
+//   if ($('select#title option:selected').val() === 'other') {
+//     if (nameInputValue === true &&
+//         emailInputValue === true &&
+//         jobRoleInputValue === true &&
+//         themeInputValue === true &&
+//         activitiesInputValue === true &&
+//         zipCodeInputValue === true &&
+//         cvvInputValue === true) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } else if ($('select#title option:selected').val() === 'other' && $('select#payment option:selected').val() === 'Credit Card') {
+//     if (nameInputValue === true &&
+//       emailInputValue === true &&
+//       jobRoleInputValue === true &&
+//       themeInputValue === true &&
+//       activitiesInputValue === true &&
+//       creditCardInputValue === true &&
+//       zipCodeInputValue === true &&
+//       cvvInputValue === true) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } else if ($('select#payment option:selected').val() === 'Credit Card') {
+//     if (nameInputValue === true &&
+//       emailInputValue === true &&
+//       themeInputValue === true &&
+//       activitiesInputValue === true &&
+//       creditCardInputValue === true &&
+//       zipCodeInputValue === true &&
+//       cvvInputValue === true) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } else {
+//     if (nameInputValue === true &&
+//       emailInputValue === true &&
+//       themeInputValue === true &&
+//       activitiesInputValue === true) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+// }
+//
+// // Validate input using regex and reinform the user if the input is incorrectly formatted.
+// function validateInput(inputType, regex, toolTipsName) {
+//   const nameInputValue = $(inputType).val();
+//   const validator = regex;
+//   if (validator.test(nameInputValue)) {
+//     if ((inputType) === 'input#other-title') {
+//       $('#title').removeAttr('class');
+//     }
+//     $(toolTipsName).addClass('hidden')
+//     $(inputType).addClass('verified');
+//     inputVerified(inputType);
+//     return true;
+//   } else {
+//     showToolTips(toolTipsName);
+//     if ($(inputType).next().text() === 'OK!') {
+//       $(inputType).removeClass('verified');
+//       $(inputType).prev().removeClass('verified__text');
+//       $(inputType).next().addClass('validation-message');
+//       $(inputType).next().removeClass('validation-message__verified');
+//       $(inputType).next().text('Opps! Please follow the tool tips recommendation')
+//       if ((inputType) === 'input#other-title') {
+//         $(inputType).prev().prev().addClass('error__text');
+//         $(inputType).prev().prev().removeClass('verified__text');
+//       }
+//     } else if ($(inputType).hasClass('verified')) {
+//       if ((inputType) === 'input#other-title') {
+//         $(inputType).prev().prev().addClass('error__text');
+//         $(inputType).prev().prev().removeClass('verified__text');
+//       }
+//       $(inputType).addClass('error');
+//       $(inputType).removeClass('verified');
+//       $(inputType).prev().addClass('error__text');
+//       $(inputType).prev().removeClass('verified__text');
+//     }
+//     return false;
+//   }
+// }
+//
+// // Tooltips remover
+// function showToolTips(className) {
+//   return $(className).removeClass('hidden');
+// }
+//
+// // Verify all inputs by changing validation message texts and colors.
+// function inputVerified(inputType) {
+//   if ($(inputType).prev().prop('tagName') === 'SELECT') {
+//     $(inputType).prev().removeClass('verified__text');
+//     $(inputType).prev().prev().addClass('verified__text');
+//   } else {
+//     $(inputType).addClass('verified');
+//     $(inputType).prev().addClass('verified__text');
+//   }
+//
+//   if ($(inputType).next().hasClass('validation-message')) {
+//     if ($(inputType).prev().prop('tagName') === 'SELECT') {
+//       $(inputType).prev().removeClass('verified__text');
+//       $(inputType).prev().prev().addClass('verified__text');
+//     }
+//     $(inputType).next().text('OK!');
+//     $(inputType).next().removeClass('validation-message');
+//     $(inputType).next().addClass('validation-message__verified');
+//   }
+// }
+//
+//
+// function conditionalValidate(inputType, i) {
+//   if ($(inputType).next().prop('tagName') === 'P') {
+//     $(inputType).next().remove();
+//   }
+//   $(inputType).addClass('error');
+//   $(inputType).prev().addClass('error__text');
+//   $(`<p class="validation-message">${$validation[i].conMessage}</p>`).insertAfter($(inputType));
+// }
 
 // Format credit card input
 function formatCreditCard(input) {
@@ -383,32 +406,65 @@ $('select#payment').on('change', () => {
 
 // All input listeners
 // Validate user's input on keypup and check to whether to show tooltips or not.
-$('input#name').on('keyup', () => {
-  validateInput('input#name', nameValidator, '.tooltips.name');
-});
+// $('input#name').on('keyup', () => {
+//   validateInput('input#name', nameValidator, '.tooltips.name');
+// });
+//
+// $('input#mail').on('keyup', () => {
+//   validateInput('input#mail', emailValidator, '.tooltips.email');
+// });
+//
+// $('input#other-title').on('keyup', () => {
+//   validateInput('input#other-title', jobRoleValidator, '.tooltips.job-role');
+// });
+//
+// $('input#cc-num').on('keyup', () => {
+//   validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card');
+// });
+//
+// $('input#cc-num').blur(e => {
+//   e.target.value = formatCreditCard(e.target.value);
+// });
+//
+// $('input#zip').on('keyup', () => {
+//   validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code');
+// });
+//
+// $('input#cvv').on('keyup', () => {
+//   validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
+// });
 
-$('input#mail').on('keyup', () => {
-  validateInput('input#mail', emailValidator, '.tooltips.email');
-});
+function validateEmail() {
+  const emailVal = $('#name').val();
+  if (/\s/.test(emailVal) || /^$/.test(emailVal)) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
-$('input#other-title').on('keyup', () => {
-  validateInput('input#other-title', jobRoleValidator, '.tooltips.job-role');
-});
+function validateName() {
+  const nameVal = $('#name').val();
+  if (/\s/.test(nameVal) || /^$/.test(nameVal)) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
-$('input#cc-num').on('keyup', () => {
-  validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card');
-});
+function checkForms() {
+  nameInput = validateName();
+  emailInput = validateEmail();
+  if (nameInput && emailInput && ) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
-$('input#cc-num').blur(e => {
-  e.target.value = formatCreditCard(e.target.value);
+$('button[type="submit"]').on('click', e => {
+  if (checkForms() === true) {
+  } else {
+    e.preventDefault();
+  }
 });
-
-$('input#zip').on('keyup', () => {
-  validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code');
-});
-
-$('input#cvv').on('keyup', () => {
-  validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
-});
-
-$('button[type="submit"]').on('click', checkForms);
