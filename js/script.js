@@ -2,48 +2,39 @@
 let $totalCost = 0;
 const nameValidator = /^[a-zA-Z]+(([\',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
 const emailValidator = /^[^@]+@[^@.]+\.[a-z]+$/i;
-const jobRoleValidator = /^[a-zA-Z ]*$/;
 const creditCardValidator = /^\d{16}/;
 const zipCodeValidator = /^\d{5}/;
 const cvvValidator = /^\d{3}/;
-const $validation = [
+const $validate = [
   {
     message: 'Please enter your name',
     conMessage: 'Please make sure you enter letters only',
-    display: false
   },
   {
     message: 'Please enter your email address',
     conMessage: 'Please enter a valid format of email address',
-    display: false
   },
   {
     message: 'Please enter your job role',
     conMessage: 'Please make sure you enter letters only',
-    display: false
   },
   {
     message: 'Please choose your design',
-    display: false
   },
   {
     message: 'Please choose your activities',
-    display: false
   },
   {
     message: 'Please fill in your 16-digit number',
     conMessage: 'Please make sure you enter 16 digits of numbers',
-    display: false
   },
   {
     message: 'Please fill in your zip code',
     conMessage: 'Please make sure you enter 5 digits of numbers',
-    display: false
   },
   {
     message: 'Please fill in your 3-digit cvv',
     conMessage: 'Please make sure you enter 3 digits of numbers',
-    display: false
   }
 ];
 
@@ -93,7 +84,7 @@ const $validation = [
 //     return true;
 //   }
 // }
-//
+
 // // Master validation of all inputs prior to user's submission.
 // function checkForms() {
 //   let jobRoleInputValue = null;
@@ -126,7 +117,7 @@ const $validation = [
 //       $(`<p class="validation-message">${$validation[0].conMessage}</p>`).insertAfter($('input#other-title'));
 //     }
 //   }
-//   const themeInputValue = themeInputCheck();
+  // const themeInputValue = themeInputCheck();
 //   const activitiesInputValue = activitiesInputCheck();
 //   if ($('select#payment option:selected').val() === 'Credit Card') {
 //     const creditCardInputValue = inputCheck('input#cc-num', 5);
@@ -193,19 +184,40 @@ const $validation = [
 // }
 //
 // // Validate input using regex and reinform the user if the input is incorrectly formatted.
-// function validateInput(inputType, regex, toolTipsName) {
-//   const nameInputValue = $(inputType).val();
-//   const validator = regex;
-//   if (validator.test(nameInputValue)) {
-//     if ((inputType) === 'input#other-title') {
-//       $('#title').removeAttr('class');
-//     }
-//     $(toolTipsName).addClass('hidden')
-//     $(inputType).addClass('verified');
-//     inputVerified(inputType);
-//     return true;
-//   } else {
-//     showToolTips(toolTipsName);
+function validateInput(inputType, regex, toolTipsName) {
+  const nameInputValue = $(inputType).val();
+  const validator = regex;
+  if (validator.test(nameInputValue)) {
+    if ($(inputType).next().prop('tagName') === 'P') {
+      $(inputType).next().remove();
+    }
+    $(`<p class="validation-message">OK!</p>`).insertAfter(inputType);
+    $(toolTipsName).addClass('hidden')
+    $(inputType).css('border', '2px solid #6CC070');
+    $(inputType).next().css('color', '#6CC070');
+    $(inputType).prev().css('color', '#6CC070');
+    if ((inputType) === 'input#other-title') {
+      $(inputType).prev().css('color', 'black');
+      $(inputType).prev().prev().css('color', '#6CC070');
+    }
+    return true;
+  } else {
+    if ($(inputType).next().text() === 'OK!') {
+      $(inputType).next().text('Oops! Please follow the recommended tooltips.')
+    }
+    showToolTips(toolTipsName);
+    $(inputType).css('border', '2px solid #A63232');
+    if ($(inputType).next().prop('tagName') === 'P') {
+      $(inputType).next().css('color', '#A63232');
+    }
+    $(inputType).prev().css('color', '#A63232');
+    if ((inputType) === 'input#other-title') {
+      $(inputType).prev().css('color', 'black');
+      $(inputType).prev().prev().css('color', '#A63232');
+    }
+    return false;
+  }
+}
 //     if ($(inputType).next().text() === 'OK!') {
 //       $(inputType).removeClass('verified');
 //       $(inputType).prev().removeClass('verified__text');
@@ -231,9 +243,9 @@ const $validation = [
 // }
 //
 // // Tooltips remover
-// function showToolTips(className) {
-//   return $(className).removeClass('hidden');
-// }
+function showToolTips(className) {
+  return $(className).removeClass('hidden');
+}
 //
 // // Verify all inputs by changing validation message texts and colors.
 // function inputVerified(inputType) {
@@ -288,9 +300,21 @@ function appendToolTips() {
 // Append tooltips to the page
 $( document ).ready(function() {
   $('input:visible:first').focus();
-  $('input#zip').attr('maxlength', "5")
-  $('input#cc-num').attr('maxlength', "16")
-  $('input#cvv').attr('maxlength', "3")
+  $('input#zip').attr('maxlength', "5");
+  $('input#cc-num').attr('maxlength', "16");
+  $('input#cvv').attr('maxlength', "3");
+  $(`<p class="validation-message">${$validate[2].message}</p>`).insertAfter($('input#other-title'));
+  $(`<p class="validation-message">${$validate[3].message}</p>`).appendTo($('fieldset.shirt'));
+  $(`<p class="validation-message">${$validate[4].message}</p>`).appendTo($('fieldset.activities'));
+  $(`<p class="validation-message">${$validate[5].message}</p>`).insertAfter($('input#cc-num'));
+  $(`<p class="validation-message">${$validate[6].message}</p>`).insertAfter($('input#zip'));
+  $(`<p class="validation-message">${$validate[7].message}</p>`).insertAfter($('input#cvv'));
+  $('fieldset.shirt p').last().hide();
+  $('input#other-title').next().hide();
+  $('fieldset.activities p').last().hide();
+  $('input#cc-num').next().hide();
+  $('input#zip').next().hide();
+  $('input#cvv').next().hide();
   appendToolTips();
 });
 
@@ -317,11 +341,12 @@ $('#colors-js-puns').hide();
 
 // Filter T-shirt's color options by user's theme option input.
 $('select#design').on('change', () => {
+  $('fieldset.shirt legend').css('color', 'black');
   if ($('select#design option:selected').val() === 'js puns') {
-      if ($('fieldset.shirt p').text() === 'Please choose your design') {
-        $('fieldset.shirt p').remove();
-        $('fieldset.shirt legend').removeClass('error__text');
-      }
+    if ($('fieldset.shirt p').text() === 'Please choose your design') {
+      $('fieldset.shirt p').remove();
+      $('fieldset.shirt legend').removeClass('error__text');
+    }
     $('select#color option:contains("JS Puns shirt only")').show();
     $('select#color option:contains("I ♥ JS shirt only")').hide();
     $('select#color').val('cornflowerblue');
@@ -340,11 +365,12 @@ $('select#design').on('change', () => {
 // Checkbox
 // - Add and remove total price upon users' choices.
 $('fieldset.activities').on('change', () => {
-  $('fieldset.activities p').remove();
-  $('fieldset.activities legend').removeClass('error__text');
+  // $('fieldset.activities p').remove();
+  $('fieldset.activities legend').css('color', 'black');
   if ($('fieldset.activities').children().length < 9) {
-    $('fieldset.activities').append(`<p></p>`);
-    $('fieldset.activities p').text(`Total: $${$totalCost}`);
+    $('fieldset.activities').append(`<p>Total: $${$totalCost}</p>`);
+    $('fieldset.activities p').last().css('color', 'black');
+    // $('fieldset.activities p').text(`Total: $${$totalCost}`);
   }
 
   if (($('input[type="checkbox"]:checked').length) === 0) {
@@ -406,37 +432,53 @@ $('select#payment').on('change', () => {
 
 // All input listeners
 // Validate user's input on keypup and check to whether to show tooltips or not.
-// $('input#name').on('keyup', () => {
-//   validateInput('input#name', nameValidator, '.tooltips.name');
-// });
-//
-// $('input#mail').on('keyup', () => {
-//   validateInput('input#mail', emailValidator, '.tooltips.email');
-// });
-//
-// $('input#other-title').on('keyup', () => {
-//   validateInput('input#other-title', jobRoleValidator, '.tooltips.job-role');
-// });
-//
-// $('input#cc-num').on('keyup', () => {
-//   validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card');
-// });
-//
-// $('input#cc-num').blur(e => {
-//   e.target.value = formatCreditCard(e.target.value);
-// });
-//
-// $('input#zip').on('keyup', () => {
-//   validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code');
-// });
-//
-// $('input#cvv').on('keyup', () => {
-//   validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
-// });
+$('input#name').on('keyup', () => {
+  validateInput('input#name', nameValidator, '.tooltips.name');
+});
 
-function validateEmail() {
-  const emailVal = $('#name').val();
-  if (/\s/.test(emailVal) || /^$/.test(emailVal)) {
+$('input#mail').on('keyup', () => {
+  validateInput('input#mail', emailValidator, '.tooltips.email');
+});
+
+$('input#other-title').on('keyup', () => {
+  validateInput('input#other-title', nameValidator, '.tooltips.job-role');
+});
+
+$('input#cc-num').on('keyup', (e) => {
+  validateInput('input#cc-num', creditCardValidator, '.tooltips.credit-card');
+  if (e.key === 'Backspace') {
+    if ($('input#cc-num').val().length === 24) {
+      const regex = /^(\d{4})(\d{4})(\d{4})(\d{4})$/;
+      let inputValue = $('input#cc-num').val( )
+      inputValue.replace('$1$2$3$4');
+      console.log(inputValue)
+      $('input#cc-num').val(inputValue);
+    }
+  }
+});
+
+$('input#cc-num').blur(e => {
+  e.target.value = formatCreditCard(e.target.value);
+});
+
+$('input#zip').on('keyup', () => {
+  validateInput('input#zip', zipCodeValidator, '.tooltips.zip-code');
+});
+
+$('input#cvv').on('keyup', () => {
+  validateInput('input#cvv', cvvValidator, '.tooltips.cvv');
+});
+
+function validateEmptyInput(inputValue, inputType, index) {
+  if (/\s/.test(inputValue) || /^$/.test(inputValue)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function validateCondition(regex, inputValue) {
+  if (!regex.test(inputValue)) {
     return false;
   } else {
     return true;
@@ -444,18 +486,155 @@ function validateEmail() {
 }
 
 function validateName() {
-  const nameVal = $('#name').val();
-  if (/\s/.test(nameVal) || /^$/.test(nameVal)) {
+  const nameVal = $('input#name').val();
+  const validateInput = validateEmptyInput(nameVal);
+  const validateInputCon = validateCondition(nameValidator, nameVal)
+  if ($('input#name').next().prop('tagName') === 'P') {
+    $('input#name').next().remove();
+  }
+  if (validateInput && validateInputCon) {
+    return true;
+  } else {
+    $(`<p class="validation-message">${$validate[0].message}</p>`).insertAfter($('input#name'));
+    $('input#name').css('border', '2px solid #A63232');
+    $('input#name').next().css('color', '#A63232');
+    $('input#name').prev().css('color', '#A63232');
+    return false;
+  }
+}
+
+function validateEmail() {
+  const emailVal = $('#mail').val();
+  const validateInput = validateEmptyInput(emailVal);
+  const validateInputCon = validateCondition(emailValidator, emailVal)
+  if ($('input#mail').next().prop('tagName') === 'P') {
+    $('input#mail').next().remove();
+  }
+  if (validateInput && validateInputCon) {
+    return true;
+  } else {
+    $(`<p class="validation-message">${$validate[1].message}</p>`).insertAfter($('input#mail'));
+    $('input#mail').css('border', '2px solid #A63232');
+    $('input#mail').next().css('color', '#A63232');
+    $('input#mail').prev().css('color', '#A63232');
+    return false;
+  }
+}
+
+function jobRoleInputCheck() {
+  const jobRoleVal = $('input#other-title').val();
+  const validateInput = validateEmptyInput(jobRoleVal);
+  const validateInputCon = validateCondition(nameValidator, jobRoleVal)
+  if (validateInput && validateInputCon) {
+    return true;
+  } else {
+    $('input#other-title').next().show();
+    $('input#other-title').css('border', '2px solid #A63232');
+    $('input#other-title').next().css('color', '#A63232');
+    $('input#other-title').prev().prev().css('color', '#A63232');
+    false;
+  }
+}
+
+function themeInputCheck() {
+  // $(`<p class="validation-message">${$validate[3].message}</p>`).appendTo($('fieldset.shirt'))
+
+  if ($('select#design option:selected').val() === 'Select Theme') {
+    // $(`<p class="validation-message">${$validate[3].message}</p>`).appendTo($('fieldset.shirt'))
+    $('fieldset.shirt p').show();
+    $('fieldset.shirt legend').first().css('color', '#A63232');
+    if ($('fieldset.shirt:last-child').prop('tagName') === 'P') {
+      $('fieldset.shirt:last-child').remove();
+      $('fieldset.shirt').next().css('color', '#A63232');
+    }
+    // $(`<p class="validation-message">${$validate[3].message}</p>`).appendTo($('fieldset.shirt'))
     return false;
   } else {
     return true;
   }
 }
 
+function activitiesInputCheck() {
+  if ($('input[type="checkbox"]:checked').length === 0) {
+    $('fieldset.activities legend').css('color', '#A63232');
+    $('fieldset.activities p').show();
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function creditCardInputCheck() {
+  let creditCardVal = $('input#cc-num').val();
+  const validateInput = validateEmptyInput(creditCardVal);
+  const validateInputCon = validateCondition(creditCardValidator, creditCardVal);
+  const zipCodeInput = zipCodeInputCheck();
+  const cvvInput = cvvInputCheck();
+  const regex = /^(\d{4})(\d{4})(\d{4})(\d{4})$/;
+  creditCardVal.replace(regex, '$1 - $2 - $3 - $4');
+  if (creditCardVal.length === 25 && creditCardVal && zipCodeInput && cvvInput) {
+    return true;
+  } else {
+    $('input#cc-num').next().show();
+    $('input#cc-num').css('border', '2px solid #A63232');
+    $('input#cc-num').next().css('color', '#A63232');
+    $('input#cc-num').prev().prev().css('color', '#A63232');
+    return false;
+  }
+}
+
+function zipCodeInputCheck() {
+  const zipCodeVal = $('input#zip').val();
+  const validateInput = validateEmptyInput(zipCodeVal);
+  const validateInputCon = validateCondition(zipCodeValidator, zipCodeVal);
+  if (validateInput && validateInputCon) {
+    return true;
+  } else {
+    $('input#zip').next().show();
+    $('input#zip').css('border', '2px solid #A63232');
+    $('input#zip').next().css('color', '#A63232');
+    $('input#zip').prev().prev().css('color', '#A63232');
+    return false;
+  }
+}
+
+function cvvInputCheck() {
+  const cvvVal = $('input#cvv').val();
+  const validateInput = validateEmptyInput(cvvVal);
+  const validateInputCon = validateCondition(cvvValidator, cvvVal);
+  if (validateInput && validateInputCon) {
+    return true;
+  } else {
+    $('input#cvv').next().show();
+    $('input#cvv').css('border', '2px solid #A63232');
+    $('input#cvv').next().css('color', '#A63232');
+    $('input#cvv').prev().prev().css('color', '#A63232');
+    return false;
+  }
+}
+
+
 function checkForms() {
-  nameInput = validateName();
-  emailInput = validateEmail();
-  if (nameInput && emailInput && ) {
+  const nameInput = validateName();
+  const emailInput = validateEmail();
+  const themeInput = themeInputCheck();
+  const activitiesInput = activitiesInputCheck();
+
+  if ($('select#title option:selected').text() === 'Other') {
+    const jobRoleInput = jobRoleInputCheck();
+    if (nameInput && emailInput && jobRoleInput && themeInput && activitiesInput) {
+      return true;
+    } else {
+      return false;
+    }
+  } else if ($('select#payment option:selected').text() === 'Credit Card') {
+    const creditCardInput = creditCardInputCheck();
+    if (nameInput && emailInput && themeInput && activitiesInput && creditCardInput) {
+      return true;
+    } else {
+      return false;
+    }
+  } else if (nameInput && emailInput && themeInput && activitiesInput) {
     return true;
   } else {
     return false;
@@ -464,7 +643,11 @@ function checkForms() {
 
 $('button[type="submit"]').on('click', e => {
   if (checkForms() === true) {
+    console.log('form submitted');
+    console.log(`checkForms = ${checkForms()}`)
   } else {
+    console.log(`checkForms = ${checkForms()}`)
+    console.log('prevented');
     e.preventDefault();
   }
 });
